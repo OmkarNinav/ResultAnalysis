@@ -1,0 +1,7 @@
+project:
+  type: website
+
+format:
+  revealjs:
+    slide-number: true
+    transition: fade

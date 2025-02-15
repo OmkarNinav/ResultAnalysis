@@ -1,0 +1,72 @@
+[
+  {
+    "objectID": "Student Analysis Report.html",
+    "href": "Student Analysis Report.html",
+    "title": "Student Result Analysis",
+    "section": "",
+    "text": "This report analyzes student semester exam results to identify key performance trends.\nIt is divided into three chapters: Overall Result Analysis, Subject-wise Result Analysis and Student-wise Result Analysis.\nThrough this structured approach, the study aims to highlight key trends, patterns and areas for improvement, ultimately contributing to better academic decision-making and student support.\n\n\n\n\n\nUnderstanding student performance is crucial for academic growth.\nThis analysis helps to identify strengths, weaknesses and trends, enabling better decision-making and targeted improvements for students.\n\n\n\n\nThe Result data, including Continuous Assessment marks and External Examination marks, was provided by the Examination Department for analysis."
+  },
+  {
+    "objectID": "Student Analysis Report.html#section",
+    "href": "Student Analysis Report.html#section",
+    "title": "Student Result Analysis",
+    "section": "",
+    "text": "Introduction\n\nThis report analyzes student semester exam results to identify key performance trends.\nIt is divided into three chapters: Overall Result Analysis, Subject-wise Result Analysis and Student-wise Result Analysis.\nThrough this structured approach, the study aims to highlight key trends, patterns and areas for improvement, ultimately contributing to better academic decision-making and student support.\n\nMotivation\n\nUnderstanding student performance is crucial for academic growth.\nThis analysis helps to identify strengths, weaknesses and trends, enabling better decision-making and targeted improvements for students.\n\nData\nThe Result data, including Continuous Assessment marks and External Examination marks, was provided by the Examination Department for analysis."
+  },
+  {
+    "objectID": "Student Analysis Report.html#section-1",
+    "href": "Student Analysis Report.html#section-1",
+    "title": "Student Result Analysis",
+    "section": "",
+    "text": "Subject Codes Used\n\nAS : Actuarial Statistics\nERC : Elements of Real Analysis and Calculus\nLA : Linear Algebra\nPD : Probability Distribution\nRM : Reasearch Methodology\nPrac : Practical 1\nPE : Professional Enhancement\nSkill_dev : Skill Development\n\nTools Used\n\nQuarto (1.5.56)\nR (4.1.1)\nRStudio (1.4.1717)"
+  },
+  {
+    "objectID": "Student Analysis Report.html#overall-analysis",
+    "href": "Student Analysis Report.html#overall-analysis",
+    "title": "Student Result Analysis",
+    "section": "Overall Analysis",
+    "text": "Overall Analysis\n\n\nTotal Students: 11\n\n\nPassed: 8\n\n\nArithmetic SGPA: 6.79/10.0"
+  },
+  {
+    "objectID": "Student Analysis Report.html#obsevations",
+    "href": "Student Analysis Report.html#obsevations",
+    "title": "Student Result Analysis",
+    "section": "Obsevations",
+    "text": "Obsevations\n\nThe analysis shows that out of 11 students, 8 have passed while, 1 failed and 2 have ATKT (Allowed to Keep Terms).\nThe arithmetic SGPA is 6.79/10, indicating an overall moderate performance.\nThe Box plot shows variation in student performance across subjects.\nSome subjects have consistent high scores (e.g. Prac, Skill_dev), while subjects like “AS” and “PE” have lower medians and wider distributions, indicating inconsistency in scores.\nThe red line (passing percentage) indicates that a few students scored below the threshold. Outliers suggest some struggled significantly."
+  },
+  {
+    "objectID": "Student Analysis Report.html#section-2",
+    "href": "Student Analysis Report.html#section-2",
+    "title": "Student Result Analysis",
+    "section": "",
+    "text": "The Heatmap shows the correlation between different subjects.\nStrong positive correlations (closer to 1) indicate that students who perform well in one subject tend to perform well in others, such as AS, ERC, LA and PD which are highly correlated.\nMeanwhile, PE has weak or negative correlation with most subjects, suggesting that performance in PE does not follow the same pattern as other subjects.\nThis analysis helps to identify subject groupings where students tend to perform similarly"
+  },
+  {
+    "objectID": "Student Analysis Report.html#section-3",
+    "href": "Student Analysis Report.html#section-3",
+    "title": "Student Result Analysis",
+    "section": "",
+    "text": "The Dendrogram visually represents the hierarchical clustering of different categories.\nIt shows that “PE”, “Prac” and “Skill_dev” are closely related and form a separate cluster, indicating their similarity.\nMeanwhile, “RM” is grouped with “AS” which further connects with “PD”, “ERC” and “LA” suggesting a different relationship.\nThe clustering height suggests the level of similarity, with lower heights indicating stronger relationships."
+  },
+  {
+    "objectID": "Student Analysis Report.html#subject-wise-analysis",
+    "href": "Student Analysis Report.html#subject-wise-analysis",
+    "title": "Student Result Analysis",
+    "section": "Subject-wise Analysis",
+    "text": "Subject-wise Analysis\n\nHierarchical Distribution of Subjects by Score Range"
+  },
+  {
+    "objectID": "Student Analysis Report.html#obsevations-1",
+    "href": "Student Analysis Report.html#obsevations-1",
+    "title": "Student Result Analysis",
+    "section": "Obsevations",
+    "text": "Obsevations\n\nThe packed bubble plot shows the distribution of student performance across different percentage ranges.\nMost subjects have students spread across all ranges, but some subjects have more students in the lower percentage range, indicating areas of difficulty.\nLarger bubbles indicate a higher number of students within a specific percentage range.\nThis helps in identifying subjects where students are performing well and those where improvement is needed."
+  },
+  {
+    "objectID": "Student Analysis Report.html#student-wise-analysis",
+    "href": "Student Analysis Report.html#student-wise-analysis",
+    "title": "Student Result Analysis",
+    "section": "Student-wise Analysis",
+    "text": "Student-wise Analysis"
+  }
+]

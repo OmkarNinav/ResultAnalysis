@@ -1,0 +1,505 @@
+---
+title: "Student Result Analysis"
+format: revealjs
+css: style.css
+logo: data/DES PU Logo.png
+footer: "Department of Statistics, DES Pune University, Pune" 
+---
+
+```{r}
+#| include: false
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(magrittr)
+library(plotly)
+library(tidyverse)
+library(gt)
+library(scales)
+library(tibble)
+library(dendextend)
+library(ggraph)
+library(igraph)
+library(viridis)
+library(ggrepel)
+library(circlepackeR)
+library(data.tree)
+library(reshape2)
+library(igraph)
+AS_marks <- read_csv("data/AS_marks.csv")
+ERC_marks <- read_csv("data/ERC_marks.csv")
+LA_marks <- read_csv("data/LA_marks.csv")
+Overall_marks <- read_csv("data/Overall_marks.csv")
+PD_marks <- read_csv("data/PD_marks.csv")
+PE_marks <- read_csv("data/PE_marks.csv")
+Prac_marks <- read_csv("data/Prac_marks.csv")
+RM_marks <- read_csv("data/RM_marks.csv")
+Skill_dev_marks <- read_csv("data/Skill_dev_marks.csv")
+OB_marks <- data.frame(AS_marks$`Roll No.`, AS_marks$`Name of Student`, AS_marks$OB, ERC_marks$OB, LA_marks$OB, PD_marks$OB, PE_marks$OB, Prac_marks$OB, RM_marks$OB, Skill_dev_marks$OB)
+CA_marks <- data.frame(AS_marks$`Roll No.`, AS_marks$`Name of Student`, AS_marks$CA, ERC_marks$CA, LA_marks$CA, PD_marks$CA, PE_marks$CA, Prac_marks$CA, RM_marks$CA, Skill_dev_marks$CA)
+ES_marks <- data.frame(AS_marks$`Roll No.`, AS_marks$`Name of Student`, AS_marks$ES, ERC_marks$ES, LA_marks$ES, PD_marks$ES, Prac_marks$`OR/PR`)
+colnames(ES_marks) <- c("Roll No.", "Name of Student", "AS", "ERC", "LA", "PD", "Prac")
+colnames(OB_marks) <- c("Roll No.", "Name of Student", "AS", "ERC", "LA", "PD", "PE", "Prac", "RM", "Skill_dev")
+colnames(CA_marks) <- c("Roll No.", "Name of Student", "AS", "ERC", "LA", "PD", "PE", "Prac", "RM", "Skill_dev")
+max_marks <- c(
+  "AS" = 100,
+  "ERC" = 100,
+  "LA" = 100,
+  "PD" = 100,
+  "PE" = 50,
+  "Prac" = 50,
+  "RM" = 100,
+  "Skill_dev" = 50
+)
+
+# Convert marks to percentage based on subject-specific max marks
+OB_percentage <- OB_marks %>%
+  mutate(across(names(max_marks), ~ (.x / max_marks[cur_column()]) * 100))
+```
+## {.smaller}
+
+
+#### Introduction 
+- This report analyzes student semester exam results to identify key performance trends.
+- It is divided into three chapters: Overall Result Analysis, Subject-wise Result Analysis and Student-wise Result Analysis.
+- Through this structured approach, the study aims to highlight key trends, patterns and areas for improvement, ultimately contributing to better academic decision-making and student support.
+
+#### **Motivation**
+
+- Understanding student performance is crucial for academic growth.
+- This analysis helps to identify strengths, weaknesses and trends, enabling better decision-making and targeted improvements for students.
+
+#### **Data**
+
+The Result data, including Continuous Assessment marks and External Examination marks, was provided by the Examination Department for analysis.
+
+## {.smaller}
+
+#### **Subject Codes Used**
+
+- AS : Actuarial Statistics
+- ERC : Elements of Real Analysis and Calculus
+- LA : Linear Algebra
+- PD : Probability Distribution
+- RM : Reasearch Methodology
+- Prac : Practical 1
+- PE : Professional Enhancement
+- Skill_dev : Skill Development
+
+#### **Tools Used**
+
+- Quarto (1.5.56)
+- R (4.1.1)
+- RStudio (1.4.1717)
+
+
+## Overall Analysis
+
+:::::: box-container
+::: box
+Total Students: 11
+:::
+
+::: box
+Passed: 8
+:::
+
+::: box
+Arithmetic SGPA: 6.79/10.0
+:::
+::::::
+
+```{r}
+#| layout: [ [40,60],[100] ]
+#| echo: false
+Overall_marks %>%
+  count(`Result Status`) %>%
+  plot_ly(
+    x = ~`Result Status`,
+    y = ~n,
+    type = "bar",
+    marker = list(color = c("orange", "red", "green")) # Customize bar color
+  ) %>%
+  layout(
+    title = list(text = "Overall Result Status", x = 0.5),
+    xaxis = list(title = "Result Status"),
+    yaxis = list(title = "Count"),
+    bargap = 0.2 # Adjust spacing between bars
+  )
+
+
+
+# Reshape data to long format for line plot
+OB_long <- OB_percentage %>%
+  pivot_longer(-c(1, 2), names_to = "Subject", values_to = "Percentage")
+
+df_long <- OB_marks %>%
+  pivot_longer(
+    cols = -c(`Roll No.`, `Name of Student`),
+    names_to = "Subject", values_to = "Marks"
+  )
+# Violin Plot using Plotly
+library(plotly)
+
+plot_ly(OB_long,
+  x = ~Subject, y = ~Percentage, type = "box",
+  marker = list(color = "skyblue"), # Set fill color properly
+  line = list(color = "black")
+) %>%
+  layout(
+    title = "Distribution of OB Marks by Subject",
+    yaxis = list(title = "Percentage"),
+    xaxis = list(title = "Subject", tickangle = 45),
+
+    # Add a horizontal line at 40% (Example: Pass mark)
+    shapes = list(
+      list(
+        type = "line",
+        x0 = -0.5, x1 = length(unique(OB_long$Subject)) - 0.5, # Cover all subjects
+        y0 = 40, y1 = 40, # Position of the line
+        line = list(color = "red", width = 2, dash = "dash") # Customize line style
+      )
+    )
+  )
+```
+
+## Obsevations {.smaller}
+
+-   The analysis shows that out of 11 students, 8 have passed while, 1 failed and 2 have ATKT (Allowed to Keep Terms).
+-   The arithmetic SGPA is 6.79/10, indicating an overall moderate performance.
+-   The Box plot shows variation in student performance across subjects.
+-   Some subjects have consistent high scores (e.g. Prac, Skill_dev), while subjects like "AS" and "PE" have lower medians and wider distributions, indicating inconsistency in scores.
+-   The red line (passing percentage) indicates that a few students scored below the threshold. Outliers suggest some struggled significantly.
+
+------------------------------------------------------------------------
+
+```{r}
+#| echo: false
+
+# Create an interactive line plot (Fixing the color mapping issue)
+plot_ly(
+  OB_long,
+  x = ~Subject,
+  y = ~Percentage,
+  color = ~`Name of Student`,
+  colors = c(
+    "Bhagyashree Pravin Patil" = "#5f4690",
+    "Janhavi Padmakar Lawand" = "#1d6996",
+    "Omkar Nilesh Ninav" = "#38a6a5",
+    "Purva Amit Puranik" = "#0f8554",
+    "Gauri Satish Shivale" = "#73af48",
+    "Zahra Huzaifa Merchant" = "#edad08",
+    "Manav Shivaji Chitale" = "#e17c05",
+    "Sanket Purushottam Brahmankar" = "#cc503e",
+    "Ashokkumar Ramjeetsingh Kushwaha" = "#94346e",
+    "Rushabh Manoj Shah" = "#6f4070",
+    "Aishwarya Vitthal Shinde" = "#666666"
+  ),
+  type = "scatter",
+  mode = "lines+markers"
+) %>%
+  layout(
+    title = "Student Performance Across Subjects (Percentage)",
+    xaxis = list(title = "Subjects", tickangle = 45),
+    yaxis = list(title = "Percentage", range = c(0, 100)),
+    legend = list(title = list(text = "Students"))
+  )
+```
+
+```{r}
+#| echo: false
+df_toppers <- Overall_marks %>%
+  arrange(desc(CGPA)) %>%
+  head(3)
+df_toppers %>%
+  gt() %>%
+  tab_header(title = "Top 3 Students by CGPA") %>%
+  fmt_number(columns = CGPA, decimals = 2) %>%
+  cols_label(`Name of Student` = "Name of Student", CGPA = "CGPA")
+```
+
+##  {.smaller}
+
+```{r}
+#| echo: false
+OB_numeric <- OB_marks %>%
+  select(-c(1, 2))
+cor_matrix <- cor(OB_numeric, use = "complete.obs")
+
+# Convert correlation matrix to a long format for Plotly
+cor_long <- cor_matrix %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Subject1") %>%
+  pivot_longer(-Subject1, names_to = "Subject2", values_to = "Correlation")
+
+# Create an interactive Plotly heatmap
+plot_ly(
+  data = cor_long,
+  x = ~Subject1,
+  y = ~Subject2,
+  z = ~Correlation,
+  type = "heatmap",
+  colorscale = "RdBu", # Red-White-Blue gradient
+  zmin = -1,
+  zmax = 1,
+  text = ~ round(Correlation, 2), # Display rounded correlation values
+  texttemplate = "%{text}", # Ensure correct text formatting
+  showscale = TRUE # Show color scale legend
+) %>%
+  layout(
+    title = "Subject Correlation Heatmap",
+    xaxis = list(title = "Subjects", tickangle = 45),
+    yaxis = list(title = "Subjects")
+  )
+```
+
+::: small-list
+-   The Heatmap shows the correlation between different subjects.
+-   Strong positive correlations (closer to 1) indicate that students who perform well in one subject tend to perform well in others, such as AS, ERC, LA and PD which are highly correlated.
+-   Meanwhile, PE has weak or negative correlation with most subjects, suggesting that performance in PE does not follow the same pattern as other subjects.
+-   This analysis helps to identify subject groupings where students tend to perform similarly
+:::
+
+##  {.smaller}
+
+```{r}
+#| echo: false
+marks_data <- OB_marks %>%
+  select(AS, ERC, LA, PD, PE, Prac, RM, Skill_dev) # Keep only numeric columns
+
+# Compute the Euclidean distance matrix
+dist_matrix <- dist(t(marks_data), method = "euclidean")
+
+# Apply Hierarchical Clustering using Ward's method
+hc_result <- hclust(dist_matrix, method = "ward.D2")
+
+# Plot the Dendrogram
+avg_dend_obj <- as.dendrogram(hc_result)
+avg_col_dend <- color_branches(avg_dend_obj, k = 2, col = c("#FF6500", "#1E3E62"))
+plot(avg_col_dend,
+  main = "Hierarchical Clustering of Subjects Based on Marks", # Title
+  ylab = "Euclidean Distance"
+)
+```
+
+::: small-list1
+-   The Dendrogram visually represents the hierarchical clustering of different categories.
+-   It shows that "PE", "Prac" and "Skill_dev" are closely related and form a separate cluster, indicating their similarity.
+-   Meanwhile, "RM" is grouped with "AS" which further connects with "PD", "ERC" and "LA" suggesting a different relationship.
+-   The clustering height suggests the level of similarity, with lower heights indicating stronger relationships.
+:::
+
+## Subject-wise Analysis {.smaller}
+
+::: {style="text-align: center;"}
+<b>Hierarchical Distribution of Subjects by Score Range</b>
+:::
+
+::: packed
+```{r, fig.width=3.25, fig.height=6.5}
+#| echo: false
+OB_numeric <- OB_percentage %>%
+  select(-c(1, 2))
+
+categorize <- function(x, subject) {
+  cut(x,
+    breaks = c(-Inf, 40, 60, 80, 100),
+    labels = c("0-40%", "40-60%", "60-80%", "80-100%"),
+    right = TRUE
+  )
+}
+
+data_percent <- OB_numeric %>%
+  mutate(across(everything(), ~ categorize(.x, cur_column())))
+
+# Get frequency table for each subject
+freq_tables <- lapply(data_percent, table)
+
+# Convert the list to a data frame
+freq_df <- as.data.frame(do.call(cbind, freq_tables))
+
+# Add the Group column and reshape
+freq_df <- cbind(Percentage = rownames(freq_df), freq_df)
+pivot_table <- melt(freq_df, id.vars = "Percentage", variable.name = "Subject", value.name = "Frequency")
+
+# Create final Group column (with subject names in group labels)
+pivot_table <- pivot_table %>%
+  mutate(Group = paste(Percentage)) %>%
+  select(Group, Subject, Frequency) # Reorder columns
+
+# Print the final pivot table
+# Create a hierarchical path column, but exclude zero-frequency entries
+pivot_table_filtered <- pivot_table %>%
+  filter(Frequency > 0) %>% # Remove rows where Frequency is 0
+  mutate(Label = paste0(Group, "\n(Freq: ", Frequency, ")")) # Format label
+
+# Convert to hierarchical format with the updated Label
+pivot_table_filtered$pathString <- paste("root", pivot_table_filtered$Subject, pivot_table_filtered$Label, sep = "/")
+
+# Convert to a hierarchical structure
+hierarchy <- as.Node(pivot_table_filtered)
+
+# Generate the interactive circle packing plot
+circlepackeR(
+  hierarchy,
+  size = "Frequency", # Use frequency as size
+  color_min = "hsl(56,80%,80%)",
+  color_max = "hsl(341,30%,40%)",
+)
+
+# Display the interactive plot
+```
+:::
+
+## Obsevations {.smaller}
+
+-   The packed bubble plot shows the distribution of student performance across different percentage ranges.
+-   Most subjects have students spread across all ranges, but some subjects have more students in the lower percentage range, indicating areas of difficulty.
+-   Larger bubbles indicate a higher number of students within a specific percentage range.
+-   This helps in identifying subjects where students are performing well and those where improvement is needed.
+
+## Student-wise Analysis
+
+------------------------------------------------------------------------
+
+```{r}
+#| echo: false
+CA_marks %>%
+  select(
+    `Roll No.` = `Roll No.`, `Name` = `Name of Student`,
+    `AS`, `ERC`, `LA`, `PD`, `PE`, `Prac`, `RM`, `Skill_dev`
+  ) %>%
+  gt() %>%
+  tab_header(
+    title = "Students Scores in Continuous Assesment",
+    subtitle = "Marks are highlighted based on severity"
+  ) %>%
+  # For subjects with max marks = 100
+  data_color(
+    columns = c(RM),
+    colors = scales::col_bin(
+      palette = c("#FB4141", "#F0FF42", "#82CD47", "#379237"),
+      domain = c(0, 100),
+      bins = c(0, 19.99, 59.99, 79.99, 100) # Bin ranges for max marks = 100
+    ),
+    apply_to = "fill",
+    na_color = "white"
+  ) %>%
+  # For subjects with max marks = 50
+  data_color(
+    columns = c(AS, ERC, LA, PD, PE, Skill_dev),
+    colors = scales::col_bin(
+      palette = c("#FB4141", "#F0FF42", "#82CD47", "#379237"),
+      domain = c(0, 50),
+      bins = c(0, 19.99, 29.99, 39.99, 50) # Bin ranges for max marks = 50
+    ),
+    apply_to = "fill",
+    na_color = "white"
+  ) %>%
+  # For subjects with max marks = 25
+  data_color(
+    columns = c(Prac),
+    colors = scales::col_bin(
+      palette = c("#FB4141", "#F0FF42", "#82CD47", "#379237"),
+      domain = c(0, 25),
+      bins = c(0, 9.99, 15.99, 19.99, 25) # Bin ranges for max marks = 25
+    ),
+    apply_to = "fill",
+    na_color = "white"
+  )
+```
+
+```{r}
+#| echo: false
+tibble::tibble(
+  Color = c("0%-40%", "40%-60%", "60%-80%", "80%-100%"),
+  Meaning = c(
+    "Marks below 40% (Failure)",
+    "Marks between 40%-60% (Low)",
+    "Marks between 60%-80% (Good)",
+    "Marks above 80% (Excellent)"
+  )
+) %>%
+  gt() %>%
+  tab_header(title = "Legend for Score Highlighting") %>%
+  data_color(
+    columns = Color,
+    colors = scales::col_factor(
+      palette = c("#FB4141", "#F0FF42", "#82CD47", "#379237"), # Red, Yellow, Green, Dark Green
+      domain = c("0%-40%", "40%-60%", "60%-80%", "80%-100%") # Explicitly define domain
+    ),
+    apply_to = "fill"
+  ) %>%
+  tab_options(
+    table.width = px(300), # Reduce table width
+    column_labels.font.size = px(12), # Smaller column headers
+    table.font.size = px(10), # Smaller overall text
+    data_row.padding = px(2) # Reduce row padding
+  )
+```
+
+------------------------------------------------------------------------
+
+```{r}
+#| echo: false
+ES_marks %>%
+  select(
+    `Roll No.` = `Roll No.`, `Name` = `Name of Student`,
+    `AS` = `AS`, `ERC` = `ERC`, `LA` = `LA`, `PD` = `PD`, `Prac` = `Prac`
+  ) %>%
+  gt() %>%
+  tab_header(
+    title = "Students Scores in End Semester Examination",
+    subtitle = "Marks are highlighted based on severity"
+  ) %>%
+  data_color(
+    columns = c(AS, ERC, LA, PD),
+    colors = scales::col_bin(
+      palette = c("#FB4141", "#F0FF42", "#82CD47", "#379237"), # Red: <20, Orange: 20-29, Yellow: 30-39
+      domain = c(0, 100),
+      bins = c(0, 19.99, 29.99, 39.99, 100)
+    ),
+    apply_to = "fill",
+    na_color = "white"
+  ) %>%
+  data_color(
+    columns = c(Prac),
+    colors = scales::col_bin(
+      palette = c("#FB4141", "#F0FF42", "#82CD47", "#379237"),
+      domain = c(0, 25),
+      bins = c(0, 9.99, 15.99, 19.99, 25) # Bin ranges for max marks = 25
+    ),
+    apply_to = "fill",
+    na_color = "white"
+  )
+```
+
+```{r}
+#| echo: false
+tibble::tibble(
+  Color = c("0%-40%", "40%-60%", "60%-80%", "80%-100%"),
+  Meaning = c(
+    "Marks below 40% (Failure)",
+    "Marks between 40%-60% (Low)",
+    "Marks between 60%-80% (Good)",
+    "Marks above 80% (Excellent)"
+  )
+) %>%
+  gt() %>%
+  tab_header(title = "Legend for Score Highlighting") %>%
+  data_color(
+    columns = Color,
+    colors = scales::col_factor(
+      palette = c("#FB4141", "#F0FF42", "#82CD47", "#379237"), # Red, Yellow, Green, Dark Green
+      domain = c("0%-40%", "40%-60%", "60%-80%", "80%-100%") # Explicitly define domain
+    ),
+    apply_to = "fill"
+  ) %>%
+  tab_options(
+    table.width = px(300), # Reduce table width
+    column_labels.font.size = px(12), # Smaller column headers
+    table.font.size = px(10), # Smaller overall text
+    data_row.padding = px(2) # Reduce row padding
+  )
+```
