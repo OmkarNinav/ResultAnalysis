@@ -290,7 +290,9 @@ plot(avg_col_dend,
 -   The clustering height suggests the level of similarity, with lower heights indicating stronger relationships.
 :::
 
-## Subject-wise Analysis {.smaller}
+## {.smaller}
+
+### Subject-wise Analysis { .students}
 
 ::: {style="text-align: center;"}
 <b>Hierarchical Distribution of Subjects by Score Range</b>
